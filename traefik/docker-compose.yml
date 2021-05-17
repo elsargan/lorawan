@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  traefik:
+    image: traefik:alpine
+    container_name: traefik
+    restart: always
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./conf/traefik/traefik.toml:/etc/traefik/traefik.toml:ro"
+      - "./conf/traefik/acme.json:/etc/traefik/acme/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
