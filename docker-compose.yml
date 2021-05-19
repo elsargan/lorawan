@@ -97,10 +97,10 @@ services:
       # - TTN_LW_TLS_ACME_DEFAULT_HOST=thethings.example.com
 
       # If using (self) signed certificates:
-      - TTN_LW_TLS_SOURCE=file
-      - TTN_LW_TLS_ROOT_CA=/run/secrets/cert.pem
-      - TTN_LW_TLS_CERTIFICATE=/run/secrets/cert.pem
-      - TTN_LW_TLS_KEY=/run/secrets/key.pem
+      - TTN_LW_TLS_SOURCE='file'
+      - TTN_LW_TLS_ROOT_CA='/run/secrets/cert.pem'
+      - TTN_LW_TLS_CERTIFICATE='/run/secrets/cert.pem'
+      - TTN_LW_TLS_KEY='/run/secrets/key.pem'
 
       # HTTP Server configuration:
       - TTN_LW_HTTP_COOKIE_HASH_KEY # generate 64 bytes (openssl rand -hex 64)
