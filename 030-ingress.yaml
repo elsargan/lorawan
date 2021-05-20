@@ -1,0 +1,24 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: cockroachdb-ui
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  tls:
+  - hosts:
+    - cockroachdb.internal.aceso.no
+    secretName: tls-cockroachdb-ui
+  rules:
+  - host: cockroachdb.internal.aceso.no
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: cockroachdb-public
+            port:
+              name: http
