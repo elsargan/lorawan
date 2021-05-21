@@ -2,7 +2,7 @@ kind: Ingress
 apiVersion: networking.k8s.io/v1
 metadata:
   name: cockroachdb-ui
-  namespace: default
+  namespace: lorawan
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-staging"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
