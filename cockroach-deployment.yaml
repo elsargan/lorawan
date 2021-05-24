@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.22.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: cockroach
+  name: cockroach
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: cockroach
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.22.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/web: "true"
+        io.kompose.service: cockroach
+    spec:
+      containers:
+        - args:
+            - start
+            - --http-port
+            - "26256"
+            - --insecure
+          image: cockroachdb/cockroach:v19.2.5
+          name: cockroach
+          ports:
+            - containerPort: 26257
+            - containerPort: 26256
+          resources: {}
+          volumeMounts:
+            - mountPath: /cockroach/cockroach-data
+              name: cockroach-claim0
+      restartPolicy: Always
+      volumes:
+        - name: cockroach-claim0
+          persistentVolumeClaim:
+            claimName: cockroach-claim0
+status: {}

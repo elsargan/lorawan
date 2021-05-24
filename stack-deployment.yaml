@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.22.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: stack
+  name: stack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: stack
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.22.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/web: "true"
+        io.kompose.service: stack
+    spec:
+      containers:
+        - args:
+            - start
+          command:
+            - ttn-lw-stack
+          env:
+            - name: TTN_LW_AS_MQTT_PUBLIC_ADDRESS
+              value: lorawan.internal.aceso.no:1883
+            - name: TTN_LW_AS_MQTT_PUBLIC_TLS_ADDRESS
+              value: lorawan.internal.aceso.no:8883
+            - name: TTN_LW_BLOB_LOCAL_DIRECTORY
+              value: '''/srv/ttn-lorawan/public/blob'''
+            - name: TTN_LW_CONSOLE_OAUTH_AUTHORIZE_URL
+              value: https://lorawan.internal.aceso.no/oauth/authorize
+            - name: TTN_LW_CONSOLE_OAUTH_CLIENT_ID
+              value: console
+            - name: TTN_LW_CONSOLE_OAUTH_CLIENT_SECRET
+              value: ee60607d8e8ca7ffe947b9b36ede52a3d4e54a9b28a581b8ef41e3728c2023bc
+            - name: TTN_LW_CONSOLE_OAUTH_TOKEN_URL
+              value: https://lorawan.internal.aceso.no/oauth/token
+            - name: TTN_LW_CONSOLE_UI_AS_BASE_URL
+              value: https://lorawan.internal.aceso.no/api/v3
+            - name: TTN_LW_CONSOLE_UI_CANONICAL_URL
+              value: https://lorawan.internal.aceso.no/console
+            - name: TTN_LW_CONSOLE_UI_EDTC_BASE_URL
+              value: https://lorawan.internal.aceso.no/api/v3
+            - name: TTN_LW_CONSOLE_UI_GS_BASE_URL
+              value: https://lorawan.internal.aceso.no/api/v3
+            - name: TTN_LW_CONSOLE_UI_IS_BASE_URL
+              value: https://lorawan.internal.aceso.no/api/v3
+            - name: TTN_LW_CONSOLE_UI_JS_BASE_URL
+              value: https://lorawan.internal.aceso.no/api/v3
+            - name: TTN_LW_CONSOLE_UI_NS_BASE_URL
+              value: https://lorawan.internal.aceso.no/api/v3
+            - name: TTN_LW_CONSOLE_UI_QRG_BASE_URL
+              value: https://lorawan.internal.aceso.no/api/v3
+            - name: TTN_LW_IS_DATABASE_URI
+              value: postgres://root@cockroach:26257/ttn_lorawan?sslmode=disable
+            - name: TTN_LW_IS_EMAIL_NETWORK_CONSOLE_URL
+              value: https://lorawan.internal.aceso.no/console
+            - name: TTN_LW_IS_EMAIL_NETWORK_IDENTITY_SERVER_URL
+              value: https://lorawan.internal.aceso.no/oauth
+            - name: TTN_LW_IS_EMAIL_PROVIDER
+              value: smtp
+            - name: TTN_LW_IS_EMAIL_SENDER_ADDRESS
+              value: no_reply_alerts@aceso.no
+            - name: TTN_LW_IS_EMAIL_SENDER_NAME
+              value: AcesoAS-LoRaWAN
+            - name: TTN_LW_IS_EMAIL_SMTP_ADDRESS
+              value: no_reply_alerts@aceso.no
+            - name: TTN_LW_IS_EMAIL_SMTP_PASSWORD
+              value: ga73wayac3s0
+            - name: TTN_LW_IS_EMAIL_SMTP_USERNAME
+              value: no_reply_alerts@aceso.no
+            - name: TTN_LW_IS_OAUTH_UI_CANONICAL_URL
+              value: https://lorawan.internal.aceso.no/oauth
+            - name: TTN_LW_IS_OAUTH_UI_IS_BASE_URL
+              value: https://lorawan.internal.aceso.no/api/v3
+            - name: TTN_LW_REDIS_ADDRESS
+              value: redis:6379
+            - name: TTN_LW_TLS_CERTIFICATE
+              value: /run/secrets/cert.pem
+            - name: TTN_LW_TLS_KEY
+              value: /run/secrets/key.pem
+            - name: TTN_LW_TLS_ROOT_CA
+              value: /run/secrets/cert.pem
+            - name: TTN_LW_TLS_SOURCE
+              value: file
+          image: thethingsnetwork/lorawan-stack:3.10
+          name: stack
+          ports:
+            - containerPort: 1885
+            - containerPort: 8885
+            - containerPort: 1882
+            - containerPort: 8882
+            - containerPort: 1883
+            - containerPort: 8883
+            - containerPort: 1884
+            - containerPort: 8884
+            - containerPort: 1887
+            - containerPort: 8887
+            - containerPort: 1700
+              protocol: UDP
+          resources: {}
+          volumeMounts:
+            - mountPath: /run/secrets/cert.pem
+              name: cert.pem
+            - mountPath: /run/secrets/key.pem
+              name: key.pem
+            - mountPath: /srv/ttn-lorawan/public/blob
+              name: stack-claim0
+      restartPolicy: Always
+      volumes:
+        - name: cert.pem
+          secret:
+            items:
+              - key: cert.pem
+                path: cert.pem
+            secretName: cert.pem
+        - name: key.pem
+          secret:
+            items:
+              - key: key.pem
+                path: key.pem
+            secretName: key.pem
+        - name: stack-claim0
+          persistentVolumeClaim:
+            claimName: stack-claim0
+status: {}
